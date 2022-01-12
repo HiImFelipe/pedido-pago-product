@@ -1,4 +1,4 @@
-# Pharmacy Micro-Service
+# Product Micro-Service
 
 ## Running the Project
 
