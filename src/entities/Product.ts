@@ -20,7 +20,7 @@ class Product {
 	@Column()
 	price: number;
 
-	@Column()
+	@Column("simple-array")
 	ingredients: string[];
 
 	@Column()
