@@ -4,7 +4,7 @@
 	"main": "dist/src/index.js",
 	"scripts": {
 		"build": "tsc",
-		"start": "yarn build && cross-env NODE_ENV=release node dist/src/index.js",
+		"start": "npm run build && cross-env NODE_ENV=release node dist/src/index.js",
 		"dev": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only --ignore-watch node_modules src/index.ts",
 		"test": "jest",
 		"test:verbose": "jest --collect-coverage",
