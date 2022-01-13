@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:stretch-slim
 
 WORKDIR /usr/app
 
@@ -8,5 +8,9 @@ RUN npm install
 COPY . .
 
 EXPOSE 50052
+
+RUN npm run typeorm:run
+RUN npm run build
+COPY ./src/pb/*.proto ./dist/pb
 
 CMD ["node", "start"]
