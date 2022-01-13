@@ -3,3 +3,4 @@ yarn.lock
 .env
 src/coverage
 dist
+data
