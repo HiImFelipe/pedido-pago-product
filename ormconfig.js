@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const srcConfig = {
-	type: "mysql",
+	type: "postgres",
 	host: process.env.DB_HOST,
 	port: process.env.DB_PORT,
 	username: process.env.DB_USER,
@@ -11,7 +11,7 @@ const srcConfig = {
 };
 
 const distConfig = {
-	type: "mysql",
+	type: "postgres",
 	host: process.env.DB_HOST,
 	port: process.env.DB_PORT,
 	username: process.env.DB_USER,
