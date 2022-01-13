@@ -28,13 +28,13 @@ createConnection()
 		);
 
 		// Reason why "any" type was used: https://github.com/grpc/grpc-node/issues/1353#issuecomment-612977724
-		const pharmacyProto: any =
+		const productProto: any =
 			loadPackageDefinition(packageDefinition).productservice;
 
 		const productService: any = container.resolve(ProductService);
 
 		const server = new Server();
-		server.addService(pharmacyProto.PharmacyService.service, productService);
+		server.addService(productProto.ProductService.service, productService);
 		server.bindAsync(
 			"localhost:50052",
 			ServerCredentials.createInsecure(),
