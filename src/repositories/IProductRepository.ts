@@ -8,7 +8,7 @@ export default interface IProductRepository {
 	): Promise<{ products: Product[]; totalProducts: number }>;
 	getAllByIds(ids: string[]): Promise<Product[]>;
 	getAllByName(name: string): Promise<Product[]>;
-	save(product: Product): Promise<Product>;
+	save(product: Omit<Product, 'id'>): Promise<Product>;
 	index(
 		query?: ProductIndexOptions
 	): Promise<{ data: Product[]; count: number }>;

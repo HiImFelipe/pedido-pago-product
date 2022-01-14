@@ -3,6 +3,7 @@ import { ICallback } from "../../@types/Proto";
 import IProductRepository from "../repositories/IProductRepository";
 import { IProductService } from "./IProductService";
 import { PharmacyClient } from "../clients/Pharmacy";
+import Product from "../entities/Product";
 
 @injectable()
 export class ProductService implements IProductService {
@@ -108,17 +109,23 @@ export class ProductService implements IProductService {
 		call: Record<string, any>,
 		callback: ICallback
 	): Promise<void> {
-		// const { id } = call.request;
+		const { id } = call.request;
 
-		// const productFound = await this.productRepository.getById(id);
+		const productFound = await this.productRepository.getById(id);
 
-		// if (!productFound) {
-		// 	return callback(new Error("Product not found!"), null);
-		// }
+		if (!productFound) {
+			return callback(new Error("Product not found!"), null);
+		}
 
-		// await this.productRepository.delete(id);
+		const { id: productFoundId, ...clonedData } = productFound;
 
-		return callback(null, {});
+		const newProduct = await this.productRepository.save(clonedData);
+
+		return callback(null, {
+			...newProduct,
+			createdAt: newProduct.createdAt.toISOString(),
+			updatedAt: newProduct.updatedAt.toISOString(),
+		});
 	}
 
 	async getProductsByIds(

@@ -50,4 +50,5 @@ service ProductService {
     rpc deleteProduct(ProductId) returns (NoParams);
     rpc updateProduct(Product) returns (Product);
     rpc getProductsByIds(ProductIds) returns (ProductList);
+    rpc cloneProduct(ProductId) returns (Product);
 }
