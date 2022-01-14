@@ -1,0 +1,111 @@
+syntax = "proto3";
+package pharmacyservice;
+
+message Pharmacy {
+    string id = 1;
+    string logo = 2;
+    string name = 3;
+    string address = 4;
+    string city = 5;
+    string uf = 6;
+    string phone = 7;
+    string cnpj = 8;
+    string cep = 9;
+    string openingTime = 10;
+    string closingTime = 11;
+    string responsibleName = 12;
+    bool isSubsidiary = 13;
+    string createdAt = 14;
+    string updatedAt = 15;
+}
+
+message Product {
+    string id = 1;
+    string thumbnail = 2;
+    string name = 3;
+    uint64 price = 4;
+    repeated string ingredients = 5;
+    int32 availability = 6;
+    float volume = 7;
+    string createdAt = 8;
+    string updatedAt = 9;
+}
+
+message PharmacyCreation {
+    string logo = 1;
+    string name = 2;
+    string address = 3;
+    string city = 4;
+    string uf = 5;
+    string phone = 6;
+    string cnpj = 7;
+    string cep = 8;
+    string openingTime = 9;
+    string closingTime = 10;
+    string responsibleName = 11;
+    repeated string productIds = 16;
+}
+
+message PharmacyId {
+    string id = 1;
+}
+
+message PharmacyList {
+    uint64 totalPharmacies = 1;
+    repeated Pharmacy pharmacies = 2;
+}
+
+message QueryParams {
+    int64 page = 1;
+	int64 take = 2;
+	string keyword = 3;
+}
+
+message PharmacyWithProductIds{
+    string id = 1;
+    string logo = 2;
+    string name = 3;
+    string address = 4;
+    string city = 5;
+    string uf = 6;
+    string phone = 7;
+    string cnpj = 8;
+    string cep = 9;
+    string openingTime = 10;
+    string closingTime = 11;
+    string responsibleName = 12;
+    bool isSubsidiary = 13;
+    string createdAt = 14;
+    string updatedAt = 15;
+    repeated string productIds = 16;
+}
+
+message PharmacyWithProducts {
+    string id = 1;
+    string logo = 2;
+    string name = 3;
+    string address = 4;
+    string city = 5;
+    string uf = 6;
+    string phone = 7;
+    string cnpj = 8;
+    string cep = 9;
+    string openingTime = 10;
+    string closingTime = 11;
+    string responsibleName = 12;
+    bool isSubsidiary = 13;
+    string createdAt = 14;
+    string updatedAt = 15;
+    repeated Product products = 16;
+}
+
+message NoParams {}
+
+service PharmacyService {
+    rpc getPharmacy(Pharmacy) returns (PharmacyWithProducts);
+    rpc getAllPharmacies(QueryParams) returns (PharmacyList);
+    rpc createPharmacy(PharmacyCreation) returns (PharmacyWithProducts);
+    rpc deletePharmacy(PharmacyId) returns (NoParams);
+    rpc updatePharmacy(PharmacyWithProductIds) returns (PharmacyWithProducts);
+    rpc deleteProduct(PharmacyId) returns (NoParams);
+}
