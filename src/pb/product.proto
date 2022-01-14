@@ -37,6 +37,10 @@ message QueryParams {
 	string keyword = 3;
 }
 
+message ProductIds {
+    repeated string productIds = 1;
+}
+
 message NoParams {}
 
 service ProductService {
@@ -45,4 +49,5 @@ service ProductService {
     rpc createProduct(ProductCreation) returns (Product);
     rpc deleteProduct(ProductId) returns (NoParams);
     rpc updateProduct(Product) returns (Product);
+    rpc getProductsByIds(ProductIds) returns (ProductList);
 }
