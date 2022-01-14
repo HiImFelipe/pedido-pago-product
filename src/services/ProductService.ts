@@ -2,6 +2,7 @@ import { injectable, inject } from "tsyringe";
 import { ICallback } from "../../@types/Proto";
 import IProductRepository from "../repositories/IProductRepository";
 import { IProductService } from "./IProductService";
+import { PharmacyClient } from "../clients/Pharmacy";
 
 @injectable()
 export class ProductService implements IProductService {
@@ -48,26 +49,6 @@ export class ProductService implements IProductService {
 		call: Record<string, any>,
 		callback: ICallback
 	): Promise<void> {
-		const { name } = call.request;
-
-		const productFound = await this.productRepository.getAllByName(name);
-
-		if (productFound.length > 0) {
-			if (productFound.length > 3) {
-				return callback(new Error("Maximum subsidiaries reached"), null);
-			}
-			const product = await this.productRepository.save(call.request);
-
-			console.log({ ...product, createdAt: product.createdAt.toISOString() });
-
-			return callback(null, {
-				...product,
-				createdAt: product.createdAt.toISOString(),
-				updatedAt: product.updatedAt.toISOString(),
-				isSubsidiary: true,
-			});
-		}
-
 		const product = await this.productRepository.save(call.request);
 
 		return callback(null, {
@@ -117,6 +98,7 @@ export class ProductService implements IProductService {
 			return callback(new Error("Product not found!"), null);
 		}
 
+		await PharmacyClient.deleteProduct({ id });
 		await this.productRepository.delete(id);
 
 		return callback(null, {});
