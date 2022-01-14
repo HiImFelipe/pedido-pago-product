@@ -12,6 +12,8 @@ export default class TestUtil {
 			"sulfato de potassio",
 			"sulfato de calcio",
 		];
+		product.createdAt = data?.createdAt || new Date();
+		product.updatedAt = data?.updatedAt || new Date();
 		return product;
 	}
 }

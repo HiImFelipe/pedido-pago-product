@@ -25,6 +25,7 @@ describe("ProductService", () => {
 			[id: string, product: Omit<Product, "id">]
 		>(),
 		delete: jest.fn<Promise<void>, [id: string]>(),
+		getAllByIds: jest.fn<Promise<Product[]>, [ids: string[]]>(),
 	};
 
 	const service = new ProductService(mockRepository);
@@ -108,9 +109,6 @@ describe("ProductService", () => {
 		it("should create a new product", async () => {
 			const product = TestUtil.createAValidProduct();
 
-			mockRepository.getAllByName.mockReturnValue(
-				new Promise<Product[]>((resolve) => resolve([]))
-			);
 			mockRepository.save.mockReturnValue(
 				new Promise((resolve) => resolve(product))
 			);
@@ -122,56 +120,9 @@ describe("ProductService", () => {
 					createdAt: product.createdAt.toISOString(),
 					updatedAt: product.updatedAt.toISOString(),
 				});
-				expect(res).toHaveProperty("isSubsidiary", false);
 			});
 
-			expect(mockRepository.getAllByName).toBeCalledTimes(1);
 			expect(mockRepository.save).toBeCalledTimes(1);
-		});
-
-		it("should create a new subsidiary product", async () => {
-			const product = TestUtil.createAValidProduct();
-
-			mockRepository.getAllByName.mockReturnValue(
-				new Promise<Product[]>((resolve) => resolve(Array(3).fill(product)))
-			);
-			mockRepository.save.mockReturnValue(
-				new Promise((resolve) => resolve(product))
-			);
-
-			await service.createProduct({ request: { ...product } }, (err, res) => {
-				expect(err).toBeNull();
-				expect(res).toEqual({
-					...product,
-					createdAt: product.createdAt.toISOString(),
-					updatedAt: product.updatedAt.toISOString(),
-					isSubsidiary: true,
-				});
-				expect(res).toHaveProperty("isSubsidiary", true);
-			});
-
-			expect(mockRepository.getAllByName).toBeCalledTimes(1);
-			expect(mockRepository.save).toBeCalledTimes(1);
-		});
-
-		it("should not create a new product (exceeded maximum subsidiaries)", async () => {
-			const product = TestUtil.createAValidProduct();
-
-			mockRepository.getAllByName.mockReturnValue(
-				new Promise((resolve) => resolve(Array(4).fill(product)))
-			);
-			mockRepository.save.mockReturnValue(
-				new Promise((resolve) => resolve(product))
-			);
-
-			await service.createProduct({ request: { ...product } }, (err, res) => {
-				expect(err).toBeDefined();
-				expect(err).toHaveProperty("message", "Maximum subsidiaries reached");
-				expect(res).toBeNull();
-			});
-
-			expect(mockRepository.getAllByName).toBeCalledTimes(1);
-			expect(mockRepository.save).toBeCalledTimes(0);
 		});
 	});
 
@@ -215,7 +166,10 @@ describe("ProductService", () => {
 		it("should update a product", async () => {
 			const product = TestUtil.createAValidProduct();
 
-			const dataToBeUpdated: Partial<Product> = { name: "Cleber" };
+			const dataToBeUpdated: Partial<Product> = {
+				name: "Produto Teste Versão 2",
+				price: 0,
+			};
 
 			mockRepository.getById.mockReturnValue(
 				new Promise<Product>((resolve) => resolve(product))
@@ -223,6 +177,8 @@ describe("ProductService", () => {
 			mockRepository.update.mockReturnValue(
 				new Promise((resolve) => resolve({ ...product, ...dataToBeUpdated }))
 			);
+
+			console.log(product);
 
 			await service.updateProduct(
 				{ request: { id: 1, ...dataToBeUpdated } },
@@ -262,6 +218,75 @@ describe("ProductService", () => {
 
 			expect(mockRepository.getById).toBeCalledTimes(1);
 			expect(mockRepository.update).toBeCalledTimes(0);
+		});
+	});
+
+	describe("Clone an existing product", () => {
+		it("should clone a product", async () => {
+			const product = TestUtil.createAValidProduct();
+
+			mockRepository.getById.mockReturnValue(
+				new Promise<Product>((resolve) => resolve(product))
+			);
+			mockRepository.save.mockReturnValue(
+				new Promise((resolve) => resolve({ ...product, id: "teste" }))
+			);
+
+			await service.cloneProduct({ request: { id: 1 } }, (err, res) => {
+				expect(err).toBeNull();
+				expect(res).toEqual({
+					...product,
+					createdAt: product.createdAt.toISOString(),
+					updatedAt: product.updatedAt.toISOString(),
+					id: "teste",
+				});
+			});
+
+			expect(mockRepository.getById).toBeCalledTimes(1);
+			expect(mockRepository.save).toBeCalledTimes(1);
+		});
+
+		it("should not clone a product (product not found)", async () => {
+			mockRepository.getById.mockReturnValue(
+				new Promise<undefined>((resolve) => resolve(undefined))
+			);
+
+			await service.cloneProduct({ request: { id: 1 } }, (err, res) => {
+				expect(err).toHaveProperty("message", "Product not found!");
+			});
+
+			expect(mockRepository.getById).toBeCalledTimes(1);
+			expect(mockRepository.save).toBeCalledTimes(0);
+		});
+	});
+
+	describe("Get products by IDs", () => {
+		it("should get 3 products", async () => {
+			const product = TestUtil.createAValidProduct();
+
+			mockRepository.getAllByIds.mockReturnValue(
+				new Promise((resolve) => resolve(Array(3).fill(product)))
+			);
+
+			await service.getProductsByIds(
+				{ request: { productIds: [1, 2, 3] } },
+				(err, res) => {
+					expect(err).toBeNull();
+					expect(res.products.length).toBe(3);
+					expect(res.totalProducts).toBe(3);
+					expect(res.products).toEqual(
+						expect.arrayContaining([
+							{
+								...product,
+								createdAt: product.createdAt.toISOString(),
+								updatedAt: product.updatedAt.toISOString(),
+							},
+						])
+					);
+				}
+			);
+
+			expect(mockRepository.getAllByIds).toBeCalledTimes(1);
 		});
 	});
 });
