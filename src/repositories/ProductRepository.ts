@@ -35,6 +35,10 @@ class ProductRepository implements IProductRepository {
 		return { products, totalProducts };
 	}
 
+	public async getAllByIds(ids: string[]): Promise<Product[]> {
+		return this.ormRepository.findByIds(ids);
+	}
+
 	public async getAllByName(name: string): Promise<Product[]> {
 		return this.ormRepository.find({
 			where: { name: Like(`%${name}%`) },
