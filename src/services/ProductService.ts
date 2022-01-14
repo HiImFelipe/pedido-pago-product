@@ -138,4 +138,30 @@ export class ProductService implements IProductService {
 
 		return callback(null, {});
 	}
+
+	async getProductsByIds(
+		call: Record<string, any>,
+		callback: ICallback
+	): Promise<void> {
+		try {
+			const { productIds } = call.request;
+
+			const products = await this.productRepository.getAllByIds(productIds);
+
+			console.log(products, productIds);
+
+			const parsedProducts = products.map((product) => ({
+				...product,
+				createdAt: product.createdAt.toISOString(),
+				updatedAt: product.updatedAt.toISOString(),
+			}));
+
+			return callback(null, {
+				products: parsedProducts,
+				totalProducts: products.length,
+			});
+		} catch (error: any) {
+			return callback(error, null);
+		}
+	}
 }
