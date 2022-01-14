@@ -36,7 +36,7 @@ createConnection()
 		const server = new Server();
 		server.addService(productProto.ProductService.service, productService);
 		server.bindAsync(
-			"localhost:50052",
+			`${process.env.APP_HOST}:50052`,
 			ServerCredentials.createInsecure(),
 			(err, port) => {
 				if (err) {
