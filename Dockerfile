@@ -9,8 +9,7 @@ COPY . .
 
 EXPOSE 50052
 
-RUN npm run typeorm:run
 RUN npm run build
-COPY ./src/pb/*.proto ./dist/pb
+COPY ./src/pb/*.proto ./dist/src/pb
 
 CMD ["node", "start"]
